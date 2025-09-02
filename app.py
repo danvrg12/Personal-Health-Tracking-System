@@ -19,7 +19,7 @@ def home():
     """
     if 'user_id' in session:
         return redirect(url_for('dashboard'))
-    return render_template('lab7.html', title='Sign In')
+    return render_template('index.html', title='Sign In')
 
 @app.route('/login', methods=['POST'])
 def login():
@@ -99,3 +99,4 @@ def logout():
 if __name__ == '__main__':
     # Run the application in debug mode for development.
     app.run(debug=True)
+
