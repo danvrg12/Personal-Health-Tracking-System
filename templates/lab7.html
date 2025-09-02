@@ -1,0 +1,1348 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Personal Health Tracker</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    <style>
+        /* Reset and base styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+
+        /* Navigation styles */
+        .navbar {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 1rem 0;
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 2px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 2rem;
+        }
+
+        .nav-logo {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #4F46E5;
+        }
+
+        .nav-menu {
+            display: flex;
+            list-style: none;
+            gap: 2rem;
+        }
+
+        .nav-menu a {
+            text-decoration: none;
+            color: #333;
+            font-weight: 500;
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .nav-menu a:hover {
+            background: #4F46E5;
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        /* Main content */
+        .main-content {
+            margin-top: 80px;
+            min-height: calc(100vh - 160px);
+        }
+
+        /* Hero section */
+        .hero-section {
+            padding: 4rem 2rem;
+            text-align: center;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            margin: 2rem;
+            border-radius: 20px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+
+        .hero-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 4rem;
+            align-items: center;
+        }
+
+        .hero-text h1 {
+            font-size: 3.5rem;
+            font-weight: 700;
+            color: white;
+            margin-bottom: 1rem;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .hero-text p {
+            font-size: 1.2rem;
+            color: rgba(255, 255, 255, 0.9);
+            margin-bottom: 2rem;
+            line-height: 1.8;
+        }
+
+        .hero-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+        }
+
+        .btn {
+            padding: 1rem 2rem;
+            border: none;
+            border-radius: 50px;
+            font-weight: 600;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            font-size: 1rem;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #4F46E5, #7C3AED);
+            color: white;
+            box-shadow: 0 4px 15px rgba(79, 70, 229, 0.4);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(79, 70, 229, 0.6);
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-3px);
+        }
+
+        /* Health icons animation */
+        .health-icons {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 2rem;
+        }
+
+        .icon-card {
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
+            padding: 2rem;
+            border-radius: 20px;
+            text-align: center;
+            color: white;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .icon-card:hover {
+            transform: translateY(-10px) rotateY(5deg);
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .icon-card i {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            display: block;
+        }
+
+        .icon-card span {
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+
+        /* Features section */
+        .features-section {
+            padding: 4rem 2rem;
+            background: white;
+            margin: 2rem;
+            border-radius: 20px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .features-section h2 {
+            text-align: center;
+            font-size: 2.5rem;
+            color: #333;
+            margin-bottom: 3rem;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+        }
+
+        .feature-card {
+            text-align: center;
+            padding: 2rem;
+            border-radius: 15px;
+            background: linear-gradient(135deg, #f8fafc, #e2e8f0);
+            transition: all 0.3s ease;
+            border: 1px solid #e2e8f0;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .feature-icon {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, #4F46E5, #7C3AED);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1rem;
+            color: white;
+            font-size: 2rem;
+        }
+
+        .feature-card h3 {
+            font-size: 1.3rem;
+            margin-bottom: 1rem;
+            color: #333;
+        }
+
+        .feature-card p {
+            color: #666;
+            line-height: 1.6;
+        }
+
+        /* CTA section */
+        .cta-section {
+            padding: 4rem 2rem;
+            text-align: center;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            margin: 2rem;
+            border-radius: 20px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+
+        .cta-content h2 {
+            font-size: 2.5rem;
+            color: white;
+            margin-bottom: 1rem;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .cta-content p {
+            font-size: 1.2rem;
+            color: rgba(255, 255, 255, 0.9);
+            margin-bottom: 2rem;
+        }
+
+        .btn-large {
+            padding: 1.2rem 3rem;
+            font-size: 1.2rem;
+        }
+
+        /* Dashboard styles */
+        .dashboard {
+            padding: 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+            display: none;
+        }
+
+        .dashboard-header {
+            text-align: center;
+            margin-bottom: 3rem;
+            color: white;
+        }
+
+        .dashboard-header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        .stat-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 2rem;
+            border-radius: 15px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+        }
+
+        .stat-icon {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #4F46E5, #7C3AED);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.5rem;
+        }
+
+        .stat-content h3 {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 0.25rem;
+        }
+
+        .stat-content p {
+            color: #666;
+            font-weight: 500;
+        }
+
+        /* Form styles */
+        .form-container {
+            padding: 2rem;
+            max-width: 600px;
+            margin: 0 auto;
+            display: none;
+        }
+
+        .form-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 3rem;
+            border-radius: 20px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+
+        .form-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .form-header i {
+            font-size: 3rem;
+            color: #4F46E5;
+            margin-bottom: 1rem;
+        }
+
+        .form-header h2 {
+            font-size: 2rem;
+            color: #333;
+            margin-bottom: 0.5rem;
+        }
+
+        .form-header p {
+            color: #666;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .input-wrapper {
+            position: relative;
+        }
+
+        .input-wrapper i {
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #666;
+        }
+
+        .input-wrapper input,
+        .input-wrapper textarea {
+            width: 100%;
+            padding: 1rem 1rem 1rem 3rem;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .input-wrapper input:focus,
+        .input-wrapper textarea:focus {
+            outline: none;
+            border-color: #4F46E5;
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+        }
+
+        .input-wrapper textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .btn-full {
+            width: 100%;
+            justify-content: center;
+        }
+
+        /* Records table */
+        .records-section {
+            padding: 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+            display: none;
+        }
+
+        .records-table {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+
+        .records-table table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .records-table th,
+        .records-table td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .records-table th {
+            background: #f8fafc;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .records-table tr:hover {
+            background: #f8fafc;
+        }
+
+        .records-table .actions-cell {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .records-table .actions-cell button {
+            border: none;
+            border-radius: 5px;
+            padding: 0.5rem 1rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            color: white;
+        }
+        
+        .btn-edit { background: #3b82f6; }
+        .btn-edit:hover { background: #2563eb; transform: scale(1.05); }
+        .btn-delete { background: #ef4444; }
+        .btn-delete:hover { background: #dc2626; transform: scale(1.05); }
+
+        /* Goals & Insights Section */
+        .goals-section, .insights-section, .gyms-section {
+            padding: 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+            display: none;
+        }
+
+        .goals-grid, .insights-grid, .gyms-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 2rem;
+        }
+
+        .goal-card, .insight-card, .gym-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 2rem;
+            border-radius: 15px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+
+        .insight-card i {
+            font-size: 1.5rem;
+            color: #4F46E5;
+            margin-right: 1rem;
+        }
+        
+        .insight-content {
+            display: flex;
+            align-items: center;
+        }
+        
+        /* Gym Card Specifics */
+        .gym-card h3 {
+            color: #4F46E5;
+            margin-bottom: 0.5rem;
+        }
+        
+        .gym-card p {
+            margin-bottom: 0.5rem;
+        }
+
+        .gym-card .price {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #10B981;
+            margin-bottom: 1rem;
+        }
+        
+        /* Notification styles */
+        .notification {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 1rem 2rem;
+            border-radius: 10px;
+            color: white;
+            font-weight: 600;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+            z-index: 2000;
+            opacity: 0;
+            animation: fadeInOut 3s ease-in-out;
+        }
+        .notification.success { background: linear-gradient(135deg, #10B981, #16A34A); }
+        .notification.error { background: linear-gradient(135deg, #EF4444, #DC2626); }
+
+        @keyframes fadeInOut {
+            0%, 100% { opacity: 0; transform: translate(-50%, 20px); }
+            10%, 90% { opacity: 1; transform: translate(-50%, 0); }
+        }
+
+        /* Footer */
+        .footer {
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            text-align: center;
+            padding: 2rem;
+            margin-top: 4rem;
+        }
+
+        /* Responsive design */
+        @media (max-width: 768px) {
+            .hero-content {
+                grid-template-columns: 1fr;
+                gap: 2rem;
+            }
+
+            .hero-text h1 {
+                font-size: 2.5rem;
+            }
+
+            .health-icons {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 1rem;
+            }
+
+            .nav-container {
+                padding: 0 1rem;
+            }
+
+            .nav-menu {
+                gap: 1rem;
+            }
+
+            .btn {
+                padding: 0.8rem 1.5rem;
+                font-size: 0.9rem;
+            }
+        }
+
+        /* Animation keyframes */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .fade-in-up {
+            animation: fadeInUp 0.6s ease forwards;
+        }
+
+        /* Health record specific styles */
+        .mood-indicator {
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-weight: 600;
+            text-align: center;
+        }
+
+        .mood-1, .mood-2, .mood-3 { background: #fef2f2; color: #dc2626; }
+        .mood-4, .mood-5, .mood-6 { background: #fef3c7; color: #d97706; }
+        .mood-7, .mood-8, .mood-9, .mood-10 { background: #dcfce7; color: #16a34a; }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            color: white;
+        }
+
+        .section-header h3 {
+            font-size: 1.5rem;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-logo">
+                <i class="fas fa-heartbeat"></i>
+                <span>HealthTracker</span>
+            </div>
+            <ul class="nav-menu">
+                <li><a href="#" onclick="showSection('home')">Home</a></li>
+                <li><a href="#" onclick="showSection('dashboard')">Dashboard</a></li>
+                <li><a href="#" onclick="showSection('add-record')">Add Record</a></li>
+                <li><a href="#" onclick="showSection('records')">Records</a></li>
+                <li><a href="#" onclick="showSection('goals')">Goals</a></li>
+                <li><a href="#" onclick="showSection('insights')">Insights</a></li>
+                <li><a href="#" onclick="showSection('gyms')">Gyms</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <main class="main-content">
+        <section id="home-section">
+            <div class="hero-section fade-in-up">
+                <div class="hero-content">
+                    <div class="hero-text">
+                        <h1>Track Your Health Journey</h1>
+                        <p>Monitor your weight, exercise, water intake, and mood in one beautiful, easy-to-use platform. Start your wellness journey today!</p>
+                        <div class="hero-buttons">
+                            <button class="btn btn-primary" onclick="showSection('add-record')">
+                                <i class="fas fa-plus"></i> Get Started
+                            </button>
+                            <button class="btn btn-secondary" onclick="showSection('dashboard')">
+                                <i class="fas fa-chart-line"></i> View Dashboard
+                            </button>
+                        </div>
+                    </div>
+                    <div class="hero-image">
+                        <div class="health-icons">
+                            <div class="icon-card">
+                                <i class="fas fa-weight"></i>
+                                <span>Weight</span>
+                            </div>
+                            <div class="icon-card">
+                                <i class="fas fa-running"></i>
+                                <span>Exercise</span>
+                            </div>
+                            <div class="icon-card">
+                                <i class="fas fa-tint"></i>
+                                <span>Hydration</span>
+                            </div>
+                            <div class="icon-card">
+                                <i class="fas fa-smile"></i>
+                                <span>Mood</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <section class="features-section fade-in-up">
+                <div class="container">
+                    <h2>Why Choose HealthTracker?</h2>
+                    <div class="features-grid">
+                        <div class="feature-card">
+                            <div class="feature-icon">
+                                <i class="fas fa-chart-line"></i>
+                            </div>
+                            <h3>Visual Progress</h3>
+                            <p>Track your health metrics with beautiful charts and graphs that make it easy to see your progress over time.</p>
+                        </div>
+                        
+                        <div class="feature-card">
+                            <div class="feature-icon">
+                                <i class="fas fa-mobile-alt"></i>
+                            </div>
+                            <h3>Easy Logging</h3>
+                            <p>Quick and simple data entry forms that take just seconds to complete. Update your health data anywhere, anytime.</p>
+                        </div>
+                        
+                        <div class="feature-card">
+                            <div class="feature-icon">
+                                <i class="fas fa-shield-alt"></i>
+                            </div>
+                            <h3>Privacy First</h3>
+                            <p>Your health data is stored locally in your browser. Complete privacy and security for your personal information.</p>
+                        </div>
+                        
+                        <div class="feature-card">
+                            <div class="feature-icon">
+                                <i class="fas fa-clock"></i>
+                            </div>
+                            <h3>History Tracking</h3>
+                            <p>View your complete health history and identify patterns that can help you make better lifestyle decisions.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="cta-section fade-in-up">
+                <div class="cta-content">
+                    <h2>Ready to Start Your Health Journey?</h2>
+                    <p>Begin tracking your health metrics today and see the difference it makes!</p>
+                    <button class="btn btn-primary btn-large" onclick="showSection('add-record')">
+                        <i class="fas fa-play"></i> Start Tracking Today
+                    </button>
+                </div>
+            </section>
+        </section>
+
+        <section id="dashboard-section" class="dashboard">
+            <div class="dashboard-header">
+                <h1>Your Health Dashboard</h1>
+                <p>Here's your health overview</p>
+            </div>
+
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-calendar-check"></i>
+                    </div>
+                    <div class="stat-content">
+                        <h3 id="total-records">0</h3>
+                        <p>Total Records</p>
+                    </div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-weight"></i>
+                    </div>
+                    <div class="stat-content">
+                        <h3 id="avg-weight">--</h3>
+                        <p>Average Weight</p>
+                    </div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-running"></i>
+                    </div>
+                    <div class="stat-content">
+                        <h3 id="total-exercise">0 min</h3>
+                        <p>Total Exercise</p>
+                    </div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-tint"></i>
+                    </div>
+                    <div class="stat-content">
+                        <h3 id="avg-water">--</h3>
+                        <p>Avg Water Intake</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section-header">
+                <h3>Recent Activity</h3>
+                <button class="btn btn-primary" onclick="showSection('add-record')">
+                    <i class="fas fa-plus"></i> Add Record
+                </button>
+            </div>
+
+            <div id="dashboard-chart" style="background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); border-radius: 15px; padding: 2rem; box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);">
+                <canvas id="healthChart" width="400" height="200"></canvas>
+            </div>
+        </section>
+
+        <section id="add-record-section" class="form-container">
+            <div class="form-card">
+                <div class="form-header">
+                    <i class="fas fa-plus-circle"></i>
+                    <h2 id="form-title">Add Health Record</h2>
+                    <p id="form-subtitle">Track your daily health metrics</p>
+                </div>
+                
+                <form id="health-form">
+                    <input type="hidden" id="record-id" name="record-id">
+                    <div class="form-group">
+                        <label for="date">Date</label>
+                        <div class="input-wrapper">
+                            <i class="fas fa-calendar"></i>
+                            <input type="date" id="date" name="date" required>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="weight">Weight (kg)</label>
+                        <div class="input-wrapper">
+                            <i class="fas fa-weight"></i>
+                            <input type="number" id="weight" name="weight" step="0.1" min="0" placeholder="70.5">
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="exercise">Exercise (minutes)</label>
+                        <div class="input-wrapper">
+                            <i class="fas fa-running"></i>
+                            <input type="number" id="exercise" name="exercise" min="0" placeholder="30">
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="water">Water Intake (liters)</label>
+                        <div class="input-wrapper">
+                            <i class="fas fa-tint"></i>
+                            <input type="number" id="water" name="water" step="0.1" min="0" placeholder="2.5">
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="mood">Mood (1-10): <span id="mood-value">5</span></label>
+                        <div class="input-wrapper">
+                            <i class="fas fa-smile"></i>
+                            <input type="range" id="mood" name="mood" min="1" max="10" value="5" oninput="document.getElementById('mood-value').textContent = this.value">
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="notes">Notes (optional)</label>
+                        <div class="input-wrapper">
+                            <i class="fas fa-sticky-note"></i>
+                            <textarea id="notes" name="notes" placeholder="How are you feeling today? Any observations..."></textarea>
+                        </div>
+                    </div>
+                    
+                    <div style="display: flex; gap: 1rem;">
+                        <button type="button" class="btn btn-secondary" onclick="tracker.resetForm()" style="flex: 1;">Cancel</button>
+                        <button type="submit" id="save-btn" class="btn btn-primary" style="flex: 1;">Save Record</button>
+                    </div>
+                </form>
+            </div>
+        </section>
+
+        <section id="records-section" class="records-section">
+            <div class="section-header">
+                <h3>Health Records History</h3>
+                <button class="btn btn-primary" onclick="showSection('add-record')">
+                    <i class="fas fa-plus"></i> Add Record
+                </button>
+            </div>
+            
+            <div class="records-table">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Weight (kg)</th>
+                            <th>Exercise (min)</th>
+                            <th>Water (L)</th>
+                            <th>Mood</th>
+                            <th>Notes</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="records-tbody">
+                        </tbody>
+                </table>
+            </div>
+        </section>
+
+        <section id="goals-section" class="goals-section">
+            <div class="section-header">
+                <h3>Your Health Goals</h3>
+                <button class="btn btn-primary" onclick="showSection('add-record')">
+                    <i class="fas fa-plus"></i> Add Record to Update Progress
+                </button>
+            </div>
+            <div id="goals-grid" class="goals-grid">
+                <!-- Goals will be rendered here by JavaScript -->
+            </div>
+        </section>
+
+        <section id="insights-section" class="insights-section">
+            <div class="section-header">
+                <h3>Personalized Insights</h3>
+            </div>
+            <div id="insights-grid" class="insights-grid">
+                <!-- Insights will be rendered here by JavaScript -->
+            </div>
+        </section>
+
+        <section id="gyms-section" class="gyms-section">
+            <div class="section-header">
+                <h3>Find Nearby Gyms</h3>
+            </div>
+            <div class="gyms-grid">
+                <div class="gym-card">
+                    <h3>Fitness First</h3>
+                    <p><i class="fas fa-map-marker-alt"></i> 123 Wellness Ave, Anytown</p>
+                    <p><strong>Features:</strong> Pool, Sauna, Group Classes</p>
+                    <div class="price">$39.99/month</div>
+                    <button class="btn btn-primary btn-full">View Details</button>
+                </div>
+                <div class="gym-card">
+                    <h3>Powerhouse Gym</h3>
+                    <p><i class="fas fa-map-marker-alt"></i> 456 Muscle St, Anytown</p>
+                    <p><strong>Features:</strong> 24/7 Access, Personal Training</p>
+                    <div class="price">$49.99/month</div>
+                    <button class="btn btn-primary btn-full">View Details</button>
+                </div>
+                <div class="gym-card">
+                    <h3>Yoga & Zen Studio</h3>
+                    <p><i class="fas fa-map-marker-alt"></i> 789 Serenity Blvd, Anytown</p>
+                    <p><strong>Features:</strong> Hot Yoga, Meditation, Pilates</p>
+                    <div class="price">$79.99/month</div>
+                    <button class="btn btn-primary btn-full">View Details</button>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <div class="footer-content">
+            <p>&copy; 2024 Personal Health Tracker. Stay healthy, stay happy!</p>
+        </div>
+    </footer>
+
+    <script>
+        // Global function to show/hide sections
+        function showSection(sectionId) {
+            const sections = ['home-section', 'dashboard-section', 'add-record-section', 'records-section', 'goals-section', 'insights-section', 'gyms-section'];
+            sections.forEach(id => {
+                const section = document.getElementById(id);
+                if (section) {
+                    section.style.display = 'none';
+                }
+            });
+            const targetSection = document.getElementById(sectionId + '-section');
+            if (targetSection) {
+                targetSection.style.display = 'block';
+            }
+
+            // Refresh data on section view
+            if (sectionId === 'dashboard') {
+                tracker.updateDashboard();
+            } else if (sectionId === 'records') {
+                tracker.updateRecordsTable();
+            } else if (sectionId === 'goals') {
+                tracker.updateGoalsDisplay();
+            } else if (sectionId === 'insights') {
+                tracker.updateInsightsDisplay();
+            }
+            // Reset form when navigating to it, unless an edit is in progress
+            if (sectionId === 'add-record' && !document.getElementById('record-id').value) {
+                 tracker.resetForm();
+            }
+        }
+
+        // Health data storage and management
+        class HealthTracker {
+            constructor() {
+                this.records = JSON.parse(localStorage.getItem('healthRecords')) || [];
+                this.goals = JSON.parse(localStorage.getItem('healthGoals')) || {
+                    targetWeight: 70,
+                    weeklyExercise: 150,
+                };
+                this.chart = null;
+                this.init();
+            }
+
+            init() {
+                if (this.records.length === 0) {
+                    this.generateDemoData();
+                }
+                document.getElementById('health-form').addEventListener('submit', (e) => {
+                    e.preventDefault();
+                    this.saveRecord();
+                });
+                showSection('home');
+            }
+            
+            generateDemoData() {
+                const today = new Date();
+                let currentWeight = 75;
+                for (let i = 30; i >= 0; i--) {
+                    const date = new Date(today);
+                    date.setDate(today.getDate() - i);
+                    
+                    // Simulate weight fluctuation
+                    currentWeight += (Math.random() - 0.5) * 0.4;
+                    
+                    const record = {
+                        id: date.getTime(),
+                        date: date.toISOString().split('T')[0],
+                        weight: parseFloat(currentWeight.toFixed(1)),
+                        exercise: Math.random() > 0.4 ? Math.floor(Math.random() * 45) + 15 : 0,
+                        water: parseFloat((Math.random() * 1.5 + 1.5).toFixed(1)),
+                        mood: Math.floor(Math.random() * 5) + 5,
+                        notes: i % 7 === 0 ? "Feeling great this week!" : ""
+                    };
+                    this.records.push(record);
+                }
+                this.saveToLocalStorage();
+            }
+
+            saveRecord() {
+                const form = document.getElementById('health-form');
+                const recordId = document.getElementById('record-id').value;
+                
+                const recordData = {
+                    date: form.date.value,
+                    weight: parseFloat(form.weight.value) || null,
+                    exercise: parseInt(form.exercise.value) || 0,
+                    water: parseFloat(form.water.value) || 0,
+                    mood: parseInt(form.mood.value) || 5,
+                    notes: form.notes.value || ''
+                };
+
+                if (recordId) {
+                    // Update existing record
+                    const index = this.records.findIndex(r => r.id == recordId);
+                    if (index > -1) {
+                        this.records[index] = { ...this.records[index], ...recordData };
+                        this.showNotification('Record updated successfully!', 'success');
+                    }
+                } else {
+                    // Add new record
+                    recordData.id = Date.now();
+                    this.records.push(recordData);
+                    this.showNotification('Record added successfully!', 'success');
+                }
+
+                this.saveToLocalStorage();
+                this.resetForm();
+                showSection('dashboard');
+            }
+            
+            editRecord(id) {
+                const record = this.records.find(r => r.id === id);
+                if (!record) return;
+
+                showSection('add-record');
+                
+                document.getElementById('form-title').textContent = 'Edit Health Record';
+                document.getElementById('form-subtitle').textContent = `Editing record for ${record.date}`;
+                document.getElementById('save-btn').textContent = 'Update Record';
+                
+                const form = document.getElementById('health-form');
+                form['record-id'].value = record.id;
+                form.date.value = record.date;
+                form.weight.value = record.weight;
+                form.exercise.value = record.exercise;
+                form.water.value = record.water;
+                form.mood.value = record.mood;
+                document.getElementById('mood-value').textContent = record.mood;
+                form.notes.value = record.notes;
+            }
+
+            deleteRecord(id) {
+                // Using a simple confirm for now, can be replaced with a custom modal
+                if(confirm('Are you sure you want to delete this record?')) {
+                    this.records = this.records.filter(record => record.id !== id);
+                    this.saveToLocalStorage();
+                    this.updateAllViews();
+                    this.showNotification('Record deleted successfully!', 'success');
+                }
+            }
+            
+            resetForm() {
+                const form = document.getElementById('health-form');
+                form.reset();
+                form['record-id'].value = '';
+                document.getElementById('date').valueAsDate = new Date();
+                document.getElementById('mood-value').textContent = '5';
+                document.getElementById('form-title').textContent = 'Add Health Record';
+                document.getElementById('form-subtitle').textContent = 'Track your daily health metrics';
+                document.getElementById('save-btn').textContent = 'Save Record';
+                showSection('dashboard');
+            }
+
+            saveToLocalStorage() {
+                localStorage.setItem('healthRecords', JSON.stringify(this.records));
+                localStorage.setItem('healthGoals', JSON.stringify(this.goals));
+            }
+            
+            updateAllViews() {
+                this.updateDashboard();
+                this.updateRecordsTable();
+                this.updateGoalsDisplay();
+                this.updateInsightsDisplay();
+            }
+
+            updateDashboard() {
+                const stats = this.calculateStats();
+                document.getElementById('total-records').textContent = stats.totalRecords;
+                document.getElementById('avg-weight').textContent = stats.avgWeight ? `${stats.avgWeight.toFixed(1)} kg` : '--';
+                document.getElementById('total-exercise').textContent = `${stats.totalExercise} min`;
+                document.getElementById('avg-water').textContent = stats.avgWater ? `${stats.avgWater.toFixed(1)} L` : '--';
+                
+                this.renderChart();
+            }
+
+            updateRecordsTable() {
+                const tbody = document.getElementById('records-tbody');
+                tbody.innerHTML = '';
+                if (this.records.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="7" style="text-align: center; padding: 2rem;">No records yet. Add your first record!</td></tr>';
+                    return;
+                }
+                
+                const sortedRecords = [...this.records].sort((a, b) => new Date(b.date) - new Date(a.date));
+
+                sortedRecords.forEach(record => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${record.date}</td>
+                        <td>${record.weight !== null ? record.weight + ' kg' : '--'}</td>
+                        <td>${record.exercise} min</td>
+                        <td>${record.water} L</td>
+                        <td><div class="mood-indicator mood-${record.mood}">${record.mood}/10</div></td>
+                        <td>${record.notes}</td>
+                        <td class="actions-cell">
+                            <button class="btn-edit" onclick="tracker.editRecord(${record.id})">Edit</button>
+                            <button class="btn-delete" onclick="tracker.deleteRecord(${record.id})">Delete</button>
+                        </td>
+                    `;
+                    tbody.appendChild(row);
+                });
+            }
+            
+            updateGoalsDisplay() {
+                const container = document.getElementById('goals-grid');
+                container.innerHTML = '';
+
+                // Weight Goal
+                const lastRecordWithWeight = [...this.records].reverse().find(r => r.weight);
+                const currentWeight = lastRecordWithWeight ? lastRecordWithWeight.weight : 'N/A';
+                const weightProgress = lastRecordWithWeight ? Math.round(100 - (Math.abs(currentWeight - this.goals.targetWeight) / this.goals.targetWeight) * 100) : 0;
+                
+                // Exercise Goal (last 7 days)
+                const sevenDaysAgo = new Date();
+                sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+                const recentExercise = this.records
+                    .filter(r => new Date(r.date) > sevenDaysAgo)
+                    .reduce((sum, r) => sum + r.exercise, 0);
+                const exerciseProgress = Math.min(100, Math.round((recentExercise / this.goals.weeklyExercise) * 100));
+
+                container.innerHTML += `
+                    <div class="goal-card">
+                        <h3>Target Weight</h3>
+                        <p>Goal: ${this.goals.targetWeight} kg</p>
+                        <p>Current: ${currentWeight} kg</p>
+                        <div style="width: 100%; background: #e2e8f0; border-radius: 10px; margin-top: 1rem;">
+                           <div style="width: ${weightProgress}%; background: #4F46E5; color: white; text-align: center; border-radius: 10px; padding: 0.2rem;">${weightProgress}%</div>
+                        </div>
+                    </div>
+                     <div class="goal-card">
+                        <h3>Weekly Exercise</h3>
+                        <p>Goal: ${this.goals.weeklyExercise} minutes</p>
+                        <p>This Week: ${recentExercise} minutes</p>
+                        <div style="width: 100%; background: #e2e8f0; border-radius: 10px; margin-top: 1rem;">
+                           <div style="width: ${exerciseProgress}%; background: #10B981; color: white; text-align: center; border-radius: 10px; padding: 0.2rem;">${exerciseProgress}%</div>
+                        </div>
+                    </div>
+                `;
+            }
+
+            updateInsightsDisplay() {
+                const container = document.getElementById('insights-grid');
+                container.innerHTML = '';
+                if (this.records.length < 3) {
+                    container.innerHTML = '<p style="color: white;">Add at least 3 records to generate insights.</p>';
+                    return;
+                }
+                
+                const stats = this.calculateStats();
+
+                // Insight 1: Weight Trend
+                const firstWeight = this.records.find(r => r.weight)?.weight;
+                const lastWeight = [...this.records].reverse().find(r => r.weight)?.weight;
+                let weightInsight = "Keep tracking your weight to see a trend.";
+                if (firstWeight && lastWeight) {
+                    if (lastWeight < firstWeight) weightInsight = `Great job! You've lost ${(firstWeight - lastWeight).toFixed(1)} kg since you started.`;
+                    else if (lastWeight > firstWeight) weightInsight = `Your weight has increased by ${(lastWeight - firstWeight).toFixed(1)} kg. Keep focusing on your goals!`;
+                    else weightInsight = "Your weight has remained stable. Consistency is key!";
+                }
+                
+                // Insight 2: Mood & Exercise
+                const avgMoodWithExercise = this.records.filter(r => r.exercise > 0).reduce((sum, r, _, arr) => sum + r.mood / arr.length, 0);
+                const avgMoodWithoutExercise = this.records.filter(r => r.exercise === 0).reduce((sum, r, _, arr) => sum + r.mood / arr.length, 0);
+                let moodInsight = "Track your mood and exercise to see how they correlate.";
+                if (avgMoodWithExercise > 0 && avgMoodWithoutExercise > 0) {
+                    if (avgMoodWithExercise > avgMoodWithoutExercise) moodInsight = `Your average mood seems to be ${((avgMoodWithExercise / avgMoodWithoutExercise - 1) * 100).toFixed(0)}% better on days you exercise!`;
+                    else moodInsight = "Exercise can be a great mood booster. Try to stay active!";
+                }
+
+                container.innerHTML = `
+                    <div class="insight-card">
+                        <div class="insight-content">
+                            <i class="fas fa-chart-line"></i>
+                            <p>${weightInsight}</p>
+                        </div>
+                    </div>
+                    <div class="insight-card">
+                        <div class="insight-content">
+                            <i class="fas fa-smile-beam"></i>
+                            <p>${moodInsight}</p>
+                        </div>
+                    </div>
+                     <div class="insight-card">
+                        <div class="insight-content">
+                            <i class="fas fa-tint"></i>
+                            <p>Your average water intake is ${stats.avgWater ? stats.avgWater.toFixed(1) : 'N/A'} L. Experts recommend around 2-3 liters per day.</p>
+                        </div>
+                    </div>
+                `;
+            }
+
+            calculateStats() {
+                const totalRecords = this.records.length;
+                const weights = this.records.map(r => r.weight).filter(w => w !== null);
+                const avgWeight = weights.length > 0 ? weights.reduce((sum, w) => sum + w, 0) / weights.length : null;
+                const totalExercise = this.records.reduce((sum, r) => sum + r.exercise, 0);
+                const waters = this.records.map(r => r.water).filter(w => w !== null);
+                const avgWater = waters.length > 0 ? waters.reduce((sum, w) => sum + w, 0) / waters.length : null;
+                return { totalRecords, avgWeight, totalExercise, avgWater };
+            }
+
+            renderChart() {
+                const sortedRecords = [...this.records].sort((a, b) => new Date(a.date) - new Date(b.date)).slice(-30);
+                const dates = sortedRecords.map(record => record.date);
+                const weights = sortedRecords.map(record => record.weight);
+                const exercises = sortedRecords.map(record => record.exercise);
+                const waters = sortedRecords.map(record => record.water);
+
+                const ctx = document.getElementById('healthChart').getContext('2d');
+                if (this.chart) {
+                    this.chart.destroy();
+                }
+
+                this.chart = new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: dates,
+                        datasets: [
+                            {
+                                label: 'Weight (kg)',
+                                data: weights,
+                                borderColor: '#4F46E5',
+                                backgroundColor: 'rgba(79, 70, 229, 0.1)',
+                                tension: 0.4,
+                                fill: true,
+                                yAxisID: 'y'
+                            },
+                            {
+                                label: 'Exercise (min)',
+                                data: exercises,
+                                borderColor: '#10B981',
+                                backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                                tension: 0.4,
+                                fill: false,
+                                yAxisID: 'y1'
+                            },
+                            {
+                                label: 'Water (L)',
+                                data: waters,
+                                borderColor: '#06B6D4',
+                                backgroundColor: 'rgba(6, 182, 212, 0.1)',
+                                tension: 0.4,
+                                fill: false,
+                                yAxisID: 'y2'
+                            }
+                        ]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        interaction: { mode: 'index', intersect: false },
+                        plugins: { tooltip: { mode: 'index', intersect: false } },
+                        scales: {
+                            y: { type: 'linear', display: true, position: 'left', title: { display: true, text: 'Weight (kg)' } },
+                            y1: { type: 'linear', display: true, position: 'right', title: { display: true, text: 'Exercise (min)' }, grid: { drawOnChartArea: false } },
+                            y2: { type: 'linear', display: true, position: 'right', title: { display: true, text: 'Water (L)' }, grid: { drawOnChartArea: false }, ticks: { callback: (value) => value + ' L' } }
+                        }
+                    }
+                });
+            }
+
+            showNotification(message, type) {
+                let notif = document.createElement('div');
+                notif.className = 'notification ' + type;
+                notif.textContent = message;
+                document.body.appendChild(notif);
+
+                setTimeout(() => {
+                    notif.remove();
+                }, 3000);
+            }
+        }
+
+        // Initialize the tracker
+        const tracker = new HealthTracker();
+    </script>
+</body>
+</html>
